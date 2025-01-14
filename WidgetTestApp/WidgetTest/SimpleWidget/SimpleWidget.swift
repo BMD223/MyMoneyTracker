@@ -44,9 +44,13 @@ struct SimpleWidgetEntryView : View {
         VStack {
             Text("Time:")
             Text(entry.date, style: .time)
+            
+            Text("Current Balance:")
+            Text(String(entry.configuration.currentBalance))
+            
+            Text("Input Balance:")
+            Text(String(entry.configuration.inputBalance))
 
-            Text("Favorite Emoji:")
-            Text(entry.configuration.favoriteEmoji)
         }
     }
 }

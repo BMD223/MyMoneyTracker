@@ -23,15 +23,15 @@ Here i will do a test segment, to fetch AAPL price 15 mins ago.
 """
 def testfetch():
     clock_response=requests.get(clock_url,headers=headers)
-    symbol= 'AAPL'
+    symbol= ['AAPL', 'TSLA', 'GOOG']
     #clock_response=requests.get(clock)
     market_time_str = clock_response.json()['timestamp']
     market_time_str = market_time_str[:26] #+ market_time_str[market_time_str.find('-'):]  # Keep up to 6 fractional digits because Python doesn't support o
     market_time = datetime.fromisoformat(market_time_str)
     print(market_time)
 
-    end_time=market_time-timedelta(minutes=16)
-    start_time=end_time-timedelta(minutes=2)
+    end_time=market_time-timedelta(minutes=15)
+    start_time=end_time-timedelta(minutes=1)
 
     request_params=StockBarsRequest(
         symbol_or_symbols=symbol,
@@ -46,6 +46,21 @@ def testfetch():
     #return client.get_stock_latest_trade(symbol=symbol, feed='iex')
     return client.get_stock_bars(request_params)
 
+def fetch(tickers,clock):
+    market_time_str = clock.json()['timestamp']
+    market_time_str = market_time_str[:26] #+ market_time_str[market_time_str.find('-'):]  # Keep up to 6 fractional digits because Python doesn't support o
+    market_time = datetime.fromisoformat(market_time_str)
+    
+    end_time=market_time-timedelta(minutes=15)
+    start_time=end_time-timedelta(minutes=1)
+
+    request_params=StockBarsRequest(
+        symbol_or_symbols=tickers,
+        timeframe=TimeFrame.Minute,
+        start=start_time.isoformat(),
+        end=end_time.isoformat()
+    )
+    return client.get_stock_bars(request_params)
 
 def add_positions(path, input_df):
     """
@@ -61,7 +76,7 @@ def add_positions(path, input_df):
         curr_df = pd.read_csv(path)
     else:
         # Create an empty DataFrame if the file doesn't exist
-        curr_df = pd.DataFrame(columns=['ticker', 'price', 'currency', 'qty', 'type'])
+        curr_df = pd.DataFrame(columns=['ticker', 'price', 'currency', 'qty', 'type','last_price'])
 
     new_df = pd.DataFrame()
     for index, row in input_df.iterrows():
@@ -76,12 +91,32 @@ def add_positions(path, input_df):
 
     curr_df.to_csv(path, index=False)
 
-def update_prices(df: pd.DataFrame):
+def update_prices(path):
+    df=pd.read_csv(path)
     now=datetime.now()
     tickers=df['ticker'].to_list()
+    clock_response=requests.get(clock_url,headers=headers)
+    
+    prices=fetch(tickers,clock_response)
+    
+    for i in prices['']:
+        ...
+    
+    return prices
     
     
-
+def get_total():
+    total=0
+    df=pd.read_csv(POSITIONS_PATH)
+    updated_prices = update_prices(POSITIONS_PATH)
+    df = df.merge(updated_prices, left_on='ticker', right_on='symbol', how='left')
+    df['total_value'] = df['qty'] * df['close']
+    total = df['total_value'].sum()
+    
+    return total
+    
+    
+    
 #Example
 # check_stock = pd.DataFrame({
 #     'ticker': ['AAPL'],
