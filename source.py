@@ -70,6 +70,7 @@ def add_positions(path, input_df):
     - path (str): Path to the positions CSV file.
     - input_df (pd.DataFrame): DataFrame containing 'ticker', 'type', 'price', and 'qty' columns.
     """
+    print(input_df)
     curr_df = pd.DataFrame()
 
     if os.path.exists(path):
@@ -78,16 +79,20 @@ def add_positions(path, input_df):
         # Create an empty DataFrame if the file doesn't exist
         curr_df = pd.DataFrame(columns=['ticker', 'price', 'currency', 'qty', 'type','last_price'])
 
-    new_df = pd.DataFrame()
     for index, row in input_df.iterrows():
-        if row['ticker'] in curr_df['ticker'][index]:
-            if row['type'] == 'BUY':
-                curr_df['price'][index] = curr_df['price'] * curr_df['qty'] + row['price'] * row['qty']
-                curr_df['qty'][index] += row['qty']
-                curr_df['price'][index] /= curr_df['qty']
+        if row['ticker'] in curr_df['ticker'].values:
+            curr_index = curr_df[curr_df['ticker'] == row['ticker']].index[0]
+            if row['type'].upper() == 'BUY':
+                curr_df.at[curr_index, 'price'] = (curr_df.at[curr_index, 'price'] * curr_df.at[curr_index, 'qty'] + row['price'] * row['qty']) / (curr_df.at[curr_index, 'qty'] + row['qty'])
+                curr_df.at[curr_index, 'qty'] += row['qty']
+                if curr_df.at[curr_index, 'qty'] == 0:
+                    curr_df.drop(curr_index, inplace=True)
             else:
-                curr_df['qty'] -= row['qty']
-    curr_df.join(row)
+                curr_df.at[curr_index, 'qty'] -= row['qty']
+                if curr_df.at[curr_index, 'qty'] == 0:
+                    curr_df.drop(curr_index, inplace=True)
+        else:
+            curr_df = pd.concat([curr_df, pd.DataFrame([row])], ignore_index=True)
 
     curr_df.to_csv(path, index=False)
 
@@ -98,22 +103,22 @@ def update_prices(path):
     clock_response=requests.get(clock_url,headers=headers)
     
     prices=fetch(tickers,clock_response)
+    used=pd.DataFrame(prices[['symbol','close']])
     
-    for i in prices['']:
-        ...
-    
-    return prices
+    for idx, row in used.iterrows():
+        df.loc[df['ticker'] == row['symbol'], 'last_price'] = row['close']
     
     
 def get_total():
-    total=0
+    entry_total = 0
+    curr_total = 0
     df=pd.read_csv(POSITIONS_PATH)
-    updated_prices = update_prices(POSITIONS_PATH)
-    df = df.merge(updated_prices, left_on='ticker', right_on='symbol', how='left')
-    df['total_value'] = df['qty'] * df['close']
-    total = df['total_value'].sum()
+    update_prices(POSITIONS_PATH)
+    for idx, row in df.iterrows():
+        entry_total+=row['price']*row['qty']
+        curr_total+=row['last_price']*row['qty']
     
-    return total
+    return (entry_total,curr_total)
     
     
     
@@ -131,4 +136,4 @@ def get_total():
 
 #add_positions(POSITIONS_PATH, check_stock)
 
-print(testfetch())
+#print(testfetch())

@@ -1,10 +1,3 @@
-//
-//  SimpleWidget.swift
-//  SimpleWidget
-//
-//  Created by Bartosz Dziuba on 1/10/25.
-//
-
 import WidgetKit
 import SwiftUI
 
@@ -37,23 +30,47 @@ struct SimpleEntry: TimelineEntry {
     let configuration: ConfigurationAppIntent
 }
 
-struct SimpleWidgetEntryView : View {
+struct SimpleWidgetEntryView: View {
+
+    @State private var isAddingPosition = false
+
     var entry: Provider.Entry
 
     var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-            
-            Text("Current Balance:")
-            Text(String(entry.configuration.currentBalance))
-            
-            Text("Input Balance:")
-            Text(String(entry.configuration.inputBalance))
+        ZStack {
+            VStack {
+                Spacer()
+
+                VStack {
+                    Text("Current Balance:")
+                    Text(String(entry.configuration.currentBalance))
+
+                    Text("Input Balance:")
+                    Text(String(entry.configuration.inputBalance))
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .multilineTextAlignment(.center)
+
+                Spacer()
+            }
 
         }
+       
     }
 }
+
+
+extension NumberFormatter {
+    static var decimalFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }
+}
+
+
 
 struct SimpleWidget: Widget {
     let kind: String = "SimpleWidget"
