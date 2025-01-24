@@ -51,7 +51,7 @@ def fetch(tickers,clock):
     market_time_str = market_time_str[:26] #+ market_time_str[market_time_str.find('-'):]  # Keep up to 6 fractional digits because Python doesn't support o
     market_time = datetime.fromisoformat(market_time_str)
     
-    end_time=market_time-timedelta(minutes=15)
+    end_time=market_time-timedelta(minutes=150)
     start_time=end_time-timedelta(minutes=1)
 
     request_params=StockBarsRequest(
@@ -96,24 +96,31 @@ def add_positions(path, input_df):
 
     curr_df.to_csv(path, index=False)
 
-def update_prices(path):
-    df=pd.read_csv(path)
-    now=datetime.now()
-    tickers=df['ticker'].to_list()
-    clock_response=requests.get(clock_url,headers=headers)
+def update_prices(path): #debugged and solved issue 24.01
+    df = pd.read_csv(path)
+    now = datetime.now()
+    tickers = df['ticker'].to_list()
     
-    prices=fetch(tickers,clock_response)
-    used=pd.DataFrame(prices[['symbol','close']])
+    clock_response = requests.get(clock_url, headers=headers)
+    prices = fetch(tickers, clock_response)
+    prices_df = prices.df
+    prices_df = prices_df.reset_index()
     
-    for idx, row in used.iterrows():
+    if 'symbol' not in prices_df.columns or 'close' not in prices_df.columns:
+        raise KeyError("Required columns 'symbol' or 'close' not found in prices_df")
+
+    for idx, row in prices_df.iterrows():
         df.loc[df['ticker'] == row['symbol'], 'last_price'] = row['close']
+    
+    df.to_csv(path, index = False)
+
     
     
 def get_total():
     entry_total = 0
     curr_total = 0
-    df=pd.read_csv(POSITIONS_PATH)
     update_prices(POSITIONS_PATH)
+    
     for idx, row in df.iterrows():
         entry_total+=row['price']*row['qty']
         curr_total+=row['last_price']*row['qty']

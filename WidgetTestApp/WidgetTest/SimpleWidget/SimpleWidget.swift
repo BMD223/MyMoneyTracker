@@ -3,62 +3,76 @@ import SwiftUI
 
 struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())
+        SimpleEntry(date: Date(), originalValue: 0, currentValue: 0, configuration: ConfigurationAppIntent())
     }
 
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: configuration)
+        SimpleEntry(date: Date(), originalValue: 0, currentValue: 0, configuration: configuration)
     }
-    
+
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
         var entries: [SimpleEntry] = []
 
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+        let (originalValue, currentValue) = await fetchData()
+
         let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, configuration: configuration)
-            entries.append(entry)
+        let entry = SimpleEntry(date: currentDate, originalValue: originalValue, currentValue: currentValue, configuration: configuration)
+        entries.append(entry)
+
+        // policy set to refresh after a certain time
+        return Timeline(entries: entries, policy: .after(Date().addingTimeInterval(15))) // Refresh every 15 seconds
+    }
+
+    private func fetchData() async -> (Int, Int) {
+        guard let url = URL(string: "http://127.0.0.1:6767/update") else { return (0, 0) }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               let originalValue = json["original_value"] as? Int,
+               let currentValue = json["current_value"] as? Int {
+                return (originalValue, currentValue)
+            }
+        } catch {
+            print("Failed to fetch or parse data: \(error)")
         }
 
-        return Timeline(entries: entries, policy: .atEnd)
+        return (0, 0) // Default fallback values
     }
 }
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
+    let originalValue: Int
+    let currentValue: Int
     let configuration: ConfigurationAppIntent
 }
 
 struct SimpleWidgetEntryView: View {
-
-    @State private var isAddingPosition = false
-
     var entry: Provider.Entry
 
     var body: some View {
-        ZStack {
+        VStack {
+            Spacer()
+
             VStack {
-                Spacer()
+                Text("Current Balance:")
+                Text(String(entry.currentValue))
+                    .font(.headline)
+                    .foregroundColor(.green)
 
-                VStack {
-                    Text("Current Balance:")
-                    Text(String(entry.configuration.currentBalance))
-
-                    Text("Input Balance:")
-                    Text(String(entry.configuration.inputBalance))
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .multilineTextAlignment(.center)
-
-                Spacer()
+                Text("Original Balance:")
+                Text(String(entry.originalValue))
+                    .font(.subheadline)
+                    .foregroundColor(.blue)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .multilineTextAlignment(.center)
 
+            Spacer()
         }
-       
     }
 }
-
 
 extension NumberFormatter {
     static var decimalFormatter: NumberFormatter {
@@ -69,8 +83,6 @@ extension NumberFormatter {
         return formatter
     }
 }
-
-
 
 struct SimpleWidget: Widget {
     let kind: String = "SimpleWidget"

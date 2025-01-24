@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D83C0B2D2D3995B4008776AD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8648BE32D31BD4F00DD246A /* ContentView.swift */; };
 		D8648BE22D31BD4F00DD246A /* WidgetTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8648BE12D31BD4F00DD246A /* WidgetTestApp.swift */; };
 		D8648BE62D31BD5100DD246A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8648BE52D31BD5100DD246A /* Assets.xcassets */; };
 		D8648BE92D31BD5100DD246A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8648BE82D31BD5100DD246A /* Preview Assets.xcassets */; };
@@ -21,6 +20,8 @@
 		D8648C1C2D31BD8200DD246A /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8648C1B2D31BD8200DD246A /* AppIntent.swift */; };
 		D8648C1E2D31BD8700DD246A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8648C1D2D31BD8700DD246A /* Assets.xcassets */; };
 		D8648C232D31BD8700DD246A /* SimpleWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D8648C102D31BD8100DD246A /* SimpleWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D8A994AC2D44421100AA1B27 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8648BE32D31BD4F00DD246A /* ContentView.swift */; };
+		D8A994AD2D44422300AA1B27 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8648BE32D31BD4F00DD246A /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		D8648C1D2D31BD8700DD246A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D8648C1F2D31BD8700DD246A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D8648C202D31BD8700DD246A /* SimpleWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SimpleWidget.entitlements; sourceTree = "<group>"; };
+		D8A994AB2D443BE700AA1B27 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 		D8648BE02D31BD4F00DD246A /* WidgetTest */ = {
 			isa = PBXGroup;
 			children = (
+				D8A994AB2D443BE700AA1B27 /* Info.plist */,
 				D8648BE12D31BD4F00DD246A /* WidgetTestApp.swift */,
 				D8648BE32D31BD4F00DD246A /* ContentView.swift */,
 				D8648BE52D31BD5100DD246A /* Assets.xcassets */,
@@ -361,7 +364,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D83C0B2D2D3995B4008776AD /* ContentView.swift in Sources */,
+				D8A994AD2D44422300AA1B27 /* ContentView.swift in Sources */,
 				D8648BE22D31BD4F00DD246A /* WidgetTestApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -389,6 +392,7 @@
 			files = (
 				D8648C182D31BD8200DD246A /* SimpleWidgetBundle.swift in Sources */,
 				D8648C1A2D31BD8200DD246A /* SimpleWidget.swift in Sources */,
+				D8A994AC2D44421100AA1B27 /* ContentView.swift in Sources */,
 				D8648C1C2D31BD8200DD246A /* AppIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -539,12 +543,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WidgetTest/WidgetTest.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WidgetTest/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WidgetTest/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -565,12 +571,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WidgetTest/WidgetTest.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WidgetTest/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WidgetTest/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
